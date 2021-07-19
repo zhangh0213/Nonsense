@@ -1,0 +1,57 @@
+//饿汉模式 非线程安全
+
+class singleLeton {
+public:
+      static getInstance() {
+          if (m_instance_ptr == nullptr) {
+              m_instance_ptr = new singleLeton;
+          }
+          return m_instance_ptr;
+      }
+private:
+			singleLeton(){};
+			singleLeton(const singleLeton&) = delete;
+			singleLeton& operate=(const singleLeton&) = delete;
+			static singleLeton* m_instance_ptr;
+}
+
+singleLeton* singleLeton::m_instance_ptr = nullptr;
+
+//
+#include <mutex>
+
+class singleLeton {
+public:
+    static singleLeton* getInstance() {
+        if (ptr == nullptr) {
+            std::lock_guard<std::mutex> lk(m_mutex);
+            if (ptr == nullptr) {}
+            ptr = new singleLeton;
+        }
+        return ptr;
+    }
+
+private:
+    singleLeton() {}
+    singleLeton(const singleLeton&) = delete;
+    singleLeton& operator=(const singleLeton&) = delete;
+    static std::mutex m_mutex;
+    static singleLeton* ptr;
+};
+
+singleLeton* singleLeton::ptr = nullptr;
+std::mutex singleLeton::m_mutex;
+
+//
+class singleLeton {
+public:
+    static singleLeton& getInstance() {
+        static singleLeton instance;
+        return instance;
+    }
+    singleLeton(const singleLeton&) = delete;
+    singleLeton& operator=(const singleLeton&) = delete;
+
+private:
+    singleLeton() {}
+};
